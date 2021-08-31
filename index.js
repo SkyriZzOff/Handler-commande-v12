@@ -2,6 +2,24 @@ const Discord = require('discord.js');
 const client = new Discord.Client();
 const fs = require('fs');
 const {TOKEN, PREFIX} = require("./config.js");
+const { Client, Collection} = require("discord.js"),
+colors = require('colors'),
+supportGuildId = ('860566584953929739'),
+supportGuildLogChannelId = ('861370579374178335');
+client.commands = new Collection()
+const { MessageEmbed } = require("discord.js")
+const rawEmb = () => {
+return new MessageEmbed()
+.setColor(colors.info);
+}
+module.exports = { rawEmb }
+client.on('guildCreate', async guild => {
+let supGuild = await client.guilds.resolve(supportGuildId)
+let channel = await supGuild.channels.resolve(supportGuildLogChannelId)
+let emb = rawEmb().setTitle('Gravity Ways Vient de Rejoindre un serveur ').setColor(colors.success).setDescription(guild.name) .addField(`**Id du Serveur**` , (guild.id)) .addField(`**Nombre de Membres**` , (guild.memberCount))
+channel.send(emb).catch(() => { })
+
+})
 
 client.login(TOKEN);
 
@@ -32,3 +50,13 @@ fs.readdir("./Events/", (error, f) => {
   });
 
 });
+client.snipes = new Map()
+client.on('messageDelete', function(message, channel){
+
+  client.snipes.set(message.channel.id, {
+    content:message.content,
+    author:message.author,
+    image:message.attachments.first() ? message.attachments.first().proxyURL : null
+  })
+
+})
